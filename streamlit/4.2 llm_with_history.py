@@ -3,12 +3,11 @@ from dotenv import load_dotenv
 from langchain_openai import OpenAIEmbeddings
 from langchain_openai import ChatOpenAI
 from langchain_pinecone import PineconeVectorStore
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, FewShotChatMessagePromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough, RunnableWithMessageHistory, RunnableLambda
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_community.chat_message_histories import ChatMessageHistory
-from config import answer_examples
 
 load_dotenv()
 
@@ -87,41 +86,23 @@ def get_chat_history_chain():
 
 
 def get_history_rag_chain():
-    """LCEL을 사용한 RAG 체인 (히스토리 + Few-shot 포함)"""
+    """LCEL을 사용한 RAG 체인 (히스토리 포함)"""
     llm = get_llm()
     retriever = get_retriever()
     chat_history_chain = get_chat_history_chain()
-        
+    
     system_prompt = (
-        "당신은 소득세법 전문가입니다. "
-        "사용자의 소득세법 관련 질문에 아래 제공된 검색된 문맥을 사용하여 답변하세요. "
+        "당신은 챗봇의 질문-답변 업무를 돕는 어시스턴트입니다. "
+        "아래 제공된 검색된 문맥을 사용하여 사용자의 질문에 답변하세요. "
         "답을 모르는 경우, 모른다고 말하세요. "
-        "답변을 제공할 때는 소득세법 (XX조)에 따르면 이라고 시작하면서 답변해주시고, "
-        "아래 예시들을 참고하여 비슷한 형식과 톤으로 답변해주세요."
+        "최대 3문장으로 답변하고 간결하게 유지하세요."
         "\n\n"
         "{context}"
     )
     
-
-    # Few-shot 예시용 프롬프트 템플릿
-    example_prompt = ChatPromptTemplate.from_messages(
-        [
-            ("human", "{input}"),
-            ("ai", "{answer}"),
-        ]
-    )
-    
-    # Few-shot 프롬프트 생성
-    few_shot_prompt = FewShotChatMessagePromptTemplate(
-        example_prompt=example_prompt,
-        examples=answer_examples,
-    )
-    
-    # Few-shot 예시를 포함한 프롬프트 구성
     qa_prompt = ChatPromptTemplate.from_messages(
         [
             ("system", system_prompt),
-            few_shot_prompt,  # Few-shot 예시 추가
             MessagesPlaceholder("chat_history"),
             ("human", "{input}")
         ]
