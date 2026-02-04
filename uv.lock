@@ -566,6 +566,7 @@ dependencies = [
     { name = "langchain-community" },
     { name = "langchain-core" },
     { name = "langchain-openai" },
+    { name = "langsmith" },
     { name = "streamlit" },
 ]
 
@@ -575,6 +576,7 @@ requires-dist = [
     { name = "langchain-community", specifier = ">=0.4.1" },
     { name = "langchain-core", specifier = ">=1.2.7" },
     { name = "langchain-openai", specifier = ">=1.1.7" },
+    { name = "langsmith", specifier = ">=0.6.7" },
     { name = "streamlit", specifier = ">=1.53.1" },
 ]
 

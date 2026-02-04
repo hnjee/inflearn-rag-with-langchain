@@ -9,5 +9,6 @@ dependencies = [
     "langchain-community>=0.4.1",
     "langchain-core>=1.2.7",
     "langchain-openai>=1.1.7",
+    "langsmith>=0.6.7",
     "streamlit>=1.53.1",
 ]

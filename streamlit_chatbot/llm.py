@@ -190,3 +190,21 @@ def get_ai_response(user_message):
     )
     return ai_message
     
+
+def get_ai_response_for_eval(user_message):
+    """Evaluation용: 실제 프로덕션 로직 그대로, 단 스트리밍만 제거"""
+    keyword_dictionary_chain = get_keyword_dictionary_chain()
+    history_rag_chain = get_history_rag_chain()
+
+    # 똑같은 체인 구조!
+    full_chain = (
+        {"input": keyword_dictionary_chain}
+        | history_rag_chain  
+    )
+    
+    # 유일한 차이: stream() → invoke()
+    ai_message = full_chain.invoke(
+        {"question": user_message},
+        {"configurable": {"session_id": "evaluation"}}
+    )
+    return ai_message
